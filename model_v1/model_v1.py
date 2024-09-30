@@ -59,6 +59,7 @@ class MyDecoderBlock3d(nn.Module):
         self.attention2 = nn.Identity()
 
     def forward(self, x, skip=None):
+        # OPT Up sample
         x = F.interpolate(x, scale_factor=(1,2,2), mode='nearest')
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
@@ -185,8 +186,6 @@ def do_dynamic_match_truth(xy, truth_xy, threshold=3):
     valid = torch.cat([left_t,right_t],1).detach()
     return index, valid
 
-
-
 def F_grade_loss(grade, truth):
     eps = 1e-5
     weight = torch.FloatTensor([1,2,4]).to(grade.device)
@@ -229,7 +228,6 @@ def F_xyz_mask_loss(heatmap, truth, D):
         loss += 0.5 * (kl(m, p.log()) + kl(m, q.log()))
     loss = loss/num_image
     return loss
-
 
 class Net(nn.Module):
     def __init__(self, pretrained=False, cfg=None):
